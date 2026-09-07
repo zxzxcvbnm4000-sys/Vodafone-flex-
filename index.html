@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>طلب باقات فودافون</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      background-color: #f4f6f9;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+    .form-card {
+      background: #ffffff;
+      width: 100%;
+      max-width: 450px;
+      padding: 25px;
+      border-radius: 12px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+    }
+    h2 {
+      text-align: center;
+      color: #e60000;
+      margin-bottom: 20px;
+    }
+    .section-title {
+      font-size: 14px;
+      font-weight: bold;
+      color: #333;
+      margin-bottom: 8px;
+    }
+    .package-options {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    .pkg-btn {
+      flex: 1;
+      padding: 12px;
+      border: 2px solid #ccc;
+      background: #fff;
+      border-radius: 8px;
+      cursor: pointer;
+      text-align: center;
+      font-weight: bold;
+      transition: all 0.3s ease;
+      color: #555;
+    }
+    .pkg-btn small {
+      display: block;
+      font-size: 12px;
+      font-weight: normal;
+      margin-top: 4px;
+    }
+    .pkg-btn.active {
+      border-color: #e60000;
+      background-color: #e60000;
+      color: #fff;
+      box-shadow: 0 4px 12px rgba(230, 0, 0, 0.3);
+    }
+    .input-group {
+      margin-bottom: 15px;
+    }
+    .input-group label {
+      display: block;
+      font-size: 14px;
+      margin-bottom: 6px;
+      color: #333;
+    }
+    .input-group input, .input-group select {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 14px;
+      outline: none;
+    }
+    .input-group input:focus, .input-group select:focus {
+      border-color: #e60000;
+    }
+    .cash-box {
+      background: #fdf2f2;
+      border: 1px dashed #e60000;
+      padding: 12px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+    .cash-number-container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 5px;
+    }
+    .cash-number {
+      font-weight: bold;
+      font-size: 18px;
+      color: #e60000;
+      letter-spacing: 1px;
+    }
+    .copy-btn {
+      background: #e60000;
+      color: #fff;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 12px;
+    }
+    .submit-btn {
+      width: 100%;
+      background-color: #25D366;
+      color: white;
+      padding: 12px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+    .submit-btn:hover {
+      background-color: #1ebe57;
+    }
+    .error-msg {
+      color: #e60000;
+      font-size: 12px;
+      margin-top: -10px;
+      margin-bottom: 10px;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="form-card">
+    <h2>طلب باقة أنا فودافون</h2>
+
+    <div class="section-title">اختر الباقة المطلوب التفعيل عليها *</div>
+    <div class="package-options">
+      <div class="pkg-btn" onclick="selectPackage('5200 ميجا', '120 جنيه', this)">
+        5200 ميجا
+        <small>السعر: 120 جنيه</small>
+      </div>
+      <div class="pkg-btn" onclick="selectPackage('10400 ميجا', '220 جنيه', this)">
+        10400 ميجا
+        <small>السعر: 220 جنيه</small>
+      </div>
+    </div>
+    <div id="pkg-error" class="error-msg">برجاء اختيار الباقة أولاً!</div>
+
+    <div class="cash-box">
+      <div style="font-size: 13px; color: #555;">رقم تحويل الكاش:</div>
+      <div class="cash-number-container">
+        <span class="cash-number" id="cashNum">01001621853</span>
+        <button class="copy-btn" onclick="copyCashNumber()">نسخ الرقم</button>
+      </div>
+    </div>
+
+    <form id="orderForm" onsubmit="sendToWhatsApp(event)">
+      <div class="input-group">
+        <label for="phone">رقم فودافون المراد تجديده *</label>
+        <input type="tel" id="phone" placeholder="010XXXXXXXX" required pattern="01[0125][0-9]{8}">
+      </div>
+
+      <div class="input-group">
+        <label for="password">كلمة مرور "أنا فودافون" (اختياري)</label>
+        <input type="text" id="password" placeholder="اكتب الباسورد أو اتركها فارغة">
+      </div>
+
+      <div class="input-group">
+        <label for="status">إذا كنت لا تعرف كلمة المرور:</label>
+        <select id="status">
+          <option value="أول مرة بتعامل معاكم">أول مرة بتعامل معاكم</option>
+          <option value="عملنا مع بعض قبل كده">عملنا مع بعض قبل كده</option>
+        </select>
+      </div>
+
+      <button type="submit" class="submit-btn">إرسال الطلب عبر الواتساب</button>
+    </form>
+  </div>
+
+  <script>
+    const myWhatsAppNumber = "201001621853"; 
+
+    let selectedPackageName = "";
+    let selectedPackagePrice = "";
+
+    function selectPackage(name, price, element) {
+      selectedPackageName = name;
+      selectedPackagePrice = price;
+      document.querySelectorAll('.pkg-btn').forEach(btn => btn.classList.remove('active'));
+      element.classList.add('active');
+      document.getElementById('pkg-error').style.display = 'none';
+    }
+
+    function copyCashNumber() {
+      const numText = document.getElementById('cashNum').innerText;
+      navigator.clipboard.writeText(numText).then(() => {
+        alert("تم نسخ رقم الكاش: " + numText);
+      });
+    }
+
+    function sendToWhatsApp(event) {
+      event.preventDefault();
+
+      if (!selectedPackageName) {
+        document.getElementById('pkg-error').style.display = 'block';
+        return;
+      }
+
+      const phone = document.getElementById('phone').value;
+      const password = document.getElementById('password').value.trim();
+      const status = document.getElementById('status').value;
+
+      let passText = password !== "" ? password : "مش عارف الباسورد";
+
+      let message = `*طلب تجديد باقة جديد* 📱\n\n`;
+      message += `🔹 *الباقة المطلوبة:* ${selectedPackageName}\n`;
+      message += `🔹 *السعر:* ${selectedPackagePrice}\n`;
+      message += `🔹 *رقم فودافون:* ${phone}\n`;
+      message += `🔹 *كلمة المرور:* ${passText}\n`;
+      
+      if (password === "") {
+        message += `🔹 *الحالة:* ${status}\n`;
+      }
+
+      const encodedMessage = encodeURIComponent(message);
+      const whatsappURL = `https://wa.me/${myWhatsAppNumber}?text=${encodedMessage}`;
+      
+      window.open(whatsappURL, '_blank');
+    }
+  </script>
+
+</body>
+</html>
